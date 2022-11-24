@@ -23,6 +23,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
     const phoneCollection = client.db('swap').collection('phoneCollection');
+    const allPhoneCollection = client.db('swap').collection('allPhones');
    
     try {
         app.get('/phones', async (req, res) => {
@@ -30,6 +31,12 @@ async function run() {
             const cursor = phoneCollection.find(query);
             const phones = await cursor.toArray();
             res.send(phones);
+        });
+        app.get('/allPhones', async (req, res) => {
+            const query = {}
+            const cursor = allPhoneCollection.find(query);
+            const allPhones = await cursor.toArray();
+            res.send(allPhones);
         });
     }
     finally {
