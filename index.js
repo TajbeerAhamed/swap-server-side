@@ -38,6 +38,14 @@ async function run() {
             const allPhones = await cursor.toArray();
             res.send(allPhones);
         });
+
+        app.get("/category/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = {};
+            const cursor = await allPhoneCollection.find(query).toArray();
+            const categorised_phone = cursor.filter((n) => n.category_id === id);
+            res.send(categorised_phone);
+          });
     }
     finally {
 
