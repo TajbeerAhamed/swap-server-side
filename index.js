@@ -24,6 +24,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     const phoneCollection = client.db('swap').collection('phoneCollection');
     const allPhoneCollection = client.db('swap').collection('allPhones');
+    const itemsCollection = client.db('swap').collection('items');
    
     try {
         app.get('/phones', async (req, res) => {
@@ -43,9 +44,27 @@ async function run() {
             const id = req.params.id;
             const query = {};
             const cursor = await allPhoneCollection.find(query).toArray();
-            const categorised_phone = cursor.filter((n) => n.category_id === id);
-            res.send(categorised_phone);
+            const category_phone = cursor.filter((n) => n.category_id === id);
+            console.log(category_phone);
+            res.send(category_phone);
           });
+
+
+          //Modal Item
+        
+app.get("/items", async (req, res) => {
+            const query = {};
+            const cursor = await itemsCollection.find(query);
+            const reviews = await cursor.toArray();
+            const reverseArray = reviews.reverse();
+            res.send(reverseArray);
+        });
+
+        app.post("/items", async (req, res) => {
+            const items = req.body;
+            const result = await itemsCollection.insertOne(items);
+            res.send(result);
+        });
     }
     finally {
 
