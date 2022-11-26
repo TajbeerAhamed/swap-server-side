@@ -25,6 +25,7 @@ async function run() {
     const phoneCollection = client.db('swap').collection('phoneCollection');
     const allPhoneCollection = client.db('swap').collection('allPhones');
     const itemsCollection = client.db('swap').collection('items');
+    const userCollection = client.db("trade").collection("usersList");
    
     try {
         app.get('/phones', async (req, res) => {
@@ -74,6 +75,22 @@ app.get("/items", async (req, res) => {
             const cursor = await itemsCollection.find(query).toArray();;
             res.send(cursor);
         });
+
+        // all User
+        app.get("/usersList", async (req, res) => {
+            const query = {};
+            const cursor = await userCollection.find(query);
+            const reviews = await cursor.toArray();
+            const reverseArray = reviews.reverse();
+            res.send(reverseArray);
+        });
+
+        app.post("/usersList", async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
+
     }
     finally {
 
