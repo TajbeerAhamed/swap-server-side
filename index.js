@@ -65,6 +65,15 @@ app.get("/items", async (req, res) => {
             const result = await itemsCollection.insertOne(items);
             res.send(result);
         });
+
+        //Dashboard
+
+        app.get("/items", async (req, res) => {
+            const email = req.query.email;
+            const query = {email:email};
+            const cursor = await itemsCollection.find(query).toArray();;
+            res.send(cursor);
+        });
     }
     finally {
 
