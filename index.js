@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 
 const app = express();
@@ -25,7 +25,7 @@ async function run() {
     const phoneCollection = client.db('swap').collection('phoneCollection');
     const allPhoneCollection = client.db('swap').collection('allPhones');
     const itemsCollection = client.db('swap').collection('items');
-    const userCollection = client.db("trade").collection("usersList");
+    const userCollection = client.db("swap").collection("usersList");
    
     try {
         app.get('/phones', async (req, res) => {
@@ -81,13 +81,41 @@ app.get("/items", async (req, res) => {
             const query = {};
             const cursor = await userCollection.find(query);
             const reviews = await cursor.toArray();
-            const reverseArray = reviews.reverse();
-            res.send(reverseArray);
+           
+            res.send(reviews);
         });
 
         app.post("/usersList", async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
+
+        app.put ("/usersList/admin/:id",async(req,res)=>{
+            const id = req.params.id;
+            const filter ={_id:ObjectId(id)}
+            const option ={upsert: true};
+            const updateDoc ={
+                $set:{
+                    role : 'admin'
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, option,);
+            console.log(result);
+            res.send(result);
+        });
+        app.get('/usersList/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollection.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
+        });
+
+        app.delete("/usersList/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await userCollection.deleteOne(query);
+            console.log(result);
             res.send(result);
         });
 
