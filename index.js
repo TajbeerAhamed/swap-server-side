@@ -26,6 +26,8 @@ async function run() {
     const allPhoneCollection = client.db('swap').collection('allPhones');
     const itemsCollection = client.db('swap').collection('items');
     const userCollection = client.db("swap").collection("usersList");
+    const productsCollection = client.db("swap").collection("myProducts");
+    const advertiseCollection = client.db("swap").collection("advertise");
    
     try {
         app.get('/phones', async (req, res) => {
@@ -115,6 +117,50 @@ app.get("/items", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await userCollection.deleteOne(query);
+            console.log(result);
+            res.send(result);
+        });
+
+        // products collection
+        app.post("/myProducts", async (req, res) => {
+            const items = req.body;
+            console.log(items);
+            const result = await productsCollection.insertOne(items);
+            res.send(result);
+        });
+        app.get("/myProducts", async (req, res) => {
+            const query = {};
+            const cursor = await productsCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
+        app.delete("/myProducts", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productsCollection.deleteOne(query);
+            console.log(result);
+            res.send(result);
+        });
+
+        app.post("/advertise", async (req, res) => {
+            const items = req.body;
+            console.log(items);
+            const result = await advertiseCollection.insertOne(items);
+            res.send(result);
+        });
+
+        app.get("/advertise", async (req, res) => {
+            const query = {};
+            const cursor = await advertiseCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
+        app.delete("/advertise", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await advertiseCollection.deleteOne(query);
             console.log(result);
             res.send(result);
         });
